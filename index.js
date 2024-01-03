@@ -1,3 +1,6 @@
+const axiosInstance = axios.create({
+    baseURL : 'https://crudcrud.com/api/74a2572894ad4d70859eff1648642425'
+});
 function handleFormSubmit(event) {
     event.preventDefault();
     const name = event.target.username.value;
@@ -10,13 +13,13 @@ function handleFormSubmit(event) {
         phone
     }
 
-    axios.post('https://crudcrud.com/api/74a2572894ad4d70859eff1648642425/bookAppointment', obj)
+    axiosInstance.post('/bookAppointment', obj)
         .then(res => showNewUser(res.data))
         .catch(err => console.error(err));
     
 }
 window.addEventListener('DOMContentLoaded', () => {
-    axios.get('https://crudcrud.com/api/74a2572894ad4d70859eff1648642425/bookAppointment')
+    axiosInstance.get('/bookAppointment')
     .then(res => {
         console.log(res.data);
         for(var i=0; i<res.data.length; i++){
@@ -39,11 +42,27 @@ function showNewUser(user){
     input.value = 'Delete';
 
     input.onclick = () => {
-        axios.delete(`https://crudcrud.com/api/74a2572894ad4d70859eff1648642425/bookAppointment/${user._id}`)
+        axiosInstance.delete(`/bookAppointment/${user._id}`)
         .then();
         parent.removeChild(li);
     }
 
+    const edit = document.createElement('input');
+    edit.type = 'button';
+    edit.value = 'Edit';
+
+    edit.onclick = () => {
+        axiosInstance.get(`/bookAppointment/${user._id}`)
+        .then(res => {
+            document.getElementById('username').value = res.data.name;
+            document.getElementById('email').value = res.data.email;
+            document.getElementById('phone').value = res.data.phone; 
+        });
+        axiosInstance.delete(`/bookAppointment/${user._id}`)
+        .then();
+        parent.removeChild(li);
+    }
     li.appendChild(input);
+    li.appendChild(edit);
     parent.appendChild(li);
 }
